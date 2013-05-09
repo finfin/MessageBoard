@@ -36,11 +36,21 @@ app.get('/tweets', function(req,res) {
 app.post('/send', express.bodyParser(), function(req, res) {
   if (req.body && req.body.tweet) {
     tweets.push(req.body.tweet);
-    res.send({status:"ok", message:"Tweet received"});
-  } else {
-    //no tweet?
+    if(acceptsHtml(req.headers['accept'])) { 
+      res.redirect('/', 302)
+    } else {
+      res.send({status:"ok", message:"Tweet received"});
+    };
+  } else {         //no tweet? 
     res.send({status:"nok", message:"No tweet received"});
-  }
-})
+  };
+});
 
 app.listen(8000);
+
+function acceptsHtml(header) {     var accepts = header.split(',');
+    for(i=0; i < accepts.length; i++) {
+        if (accepts[i] === 'text/html') { return true; }; 
+    }
+    return false; 
+}
